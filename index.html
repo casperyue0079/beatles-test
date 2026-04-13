@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>测测你是披头士里的哪个人</title>
+  <style>:root {
+  --bg: #f6faf6;
+  --panel: #ffffff;
+  --text: #1e2a22;
+  --muted: #6a786f;
+  --line: #dbe8dd;
+  --soft: #edf6ef;
+  --accent: #6c8d71;
+  --accent-strong: #4d6a53;
+  --shadow: 0 16px 40px rgba(47, 73, 55, 0.08);
+  --radius: 22px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: radial-gradient(circle at top left, #f8fff8 0, #f6faf6 36%, #f2f7f3 100%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px 16px 56px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ===== Start page ===== */
+.start-page {
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 64px 40px;
+  max-width: 640px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.start-page::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(127,165,134,.18), rgba(127,165,134,.02));
+  pointer-events: none;
+}
+
+.start-page h1 {
+  font-size: clamp(28px, 5vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.start-page p {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 8px;
+}
+
+.question-count {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+/* ===== Buttons ===== */
+button {
+  border: 0;
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
+  font: inherit;
+}
+
+button:hover { transform: translateY(-1px); }
+button:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+
+.btn-primary {
+  background: var(--accent-strong);
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(77,106,83,.18);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.btn-primary:hover { box-shadow: 0 16px 36px rgba(77,106,83,.24); }
+
+.btn-secondary {
+  background: #fff;
+  color: var(--accent-strong);
+  padding: 14px 24px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.btn-secondary:hover { background: var(--soft); }
+
+/* ===== Progress ===== */
+.progress-bar {
+  height: 10px;
+  background: #edf3ee;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #97b59c, #5b7a62);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+/* ===== Question card ===== */
+.question-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  max-width: 640px;
+  margin: 0 auto 20px;
+  animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.question-text {
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 18px;
+  white-space: pre-wrap;
+}
+
+.options {
+  display: grid;
+  gap: 10px;
+}
+
+.option-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  font-size: 15px;
+  transition: border-color .16s ease, background .16s ease, transform .16s ease;
+}
+
+.option-btn:hover {
+  border-color: #bcd0c1;
+  background: #f8fcf9;
+}
+
+.option-btn.selected {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: #fff;
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.nav-buttons .btn-primary { flex: 1; }
+
+/* ===== Result page ===== */
+.result-page {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.result-page .header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.result-page .header p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.result-top {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 18px;
+  align-items: stretch;
+  margin-bottom: 18px;
+}
+
+.poster-box {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(127,165,134,.16), rgba(127,165,134,0) 40%),
+    linear-gradient(180deg, #ffffff, #f7fbf8);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 280px;
+  overflow: hidden;
+  position: relative;
+}
+
+.poster-box::after {
+  content: "";
+  position: absolute;
+  right: -46px;
+  bottom: -46px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(127,165,134,.12), rgba(127,165,134,.01));
+  pointer-events: none;
+}
+
+.poster-box img {
+  width: 100%;
+  max-height: 460px;
+  object-fit: contain;
+  border-radius: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.poster-box.no-image { display: none; }
+
+.type-box {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  background: linear-gradient(180deg, #ffffff, #fbfdfb);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.type-kicker {
+  font-size: 12px;
+  color: var(--accent-strong);
+  margin-bottom: 8px;
+  letter-spacing: .06em;
+}
+
+.type-name {
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.type-subtitle {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.match-badge {
+  margin-top: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--accent-strong);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.result-desc-box {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  background: linear-gradient(180deg, #ffffff, #fbfdfb);
+  margin-bottom: 18px;
+  line-height: 1.85;
+  font-size: 15px;
+  color: #304034;
+  white-space: pre-wrap;
+}
+
+/* rare tags */
+.rare-tags {
+  margin-bottom: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rare-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 6px 14px 6px 6px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.rare-tag-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+}
+
+.rare-tag-text {
+  padding-right: 4px;
+}
+
+/* dimension bars */
+.dimension-bars {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  background: linear-gradient(180deg, #ffffff, #fbfdfb);
+  margin-bottom: 18px;
+}
+
+.dim-row {
+  margin-bottom: 16px;
+}
+
+.dim-row:last-child { margin-bottom: 0; }
+
+.dim-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.dim-track {
+  background: #edf3ee;
+  border-radius: 999px;
+  height: 10px;
+  position: relative;
+}
+
+.dim-indicator {
+  position: absolute;
+  top: -3px;
+  width: 16px;
+  height: 16px;
+  background: var(--accent-strong);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  transition: left 0.5s ease;
+  box-shadow: 0 0 10px rgba(77,106,83,.3);
+}
+
+/* result image */
+.result-image {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.result-image img {
+  max-width: 100%;
+  max-height: 360px;
+  border-radius: 18px;
+  object-fit: contain;
+}
+
+/* actions */
+.result-actions {
+  text-align: center;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.restart-btn {
+  margin-top: 18px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 860px) {
+  .result-top {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 12px 8px 32px; }
+  .start-page { padding: 40px 20px; }
+  .question-card { padding: 18px; }
+  .start-page h1 { font-size: 28px; }
+  .type-name { font-size: 30px; }
+}
+</style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+  <script>
+    window.__TEST_DATA__ = {"title": "测测你是披头士里的哪个人", "description": "一个关于「测测你是披头士里的哪个人」的主题人格测试", "mode": "多维度", "naming_mode": "角色对标", "dimensions": [{"id": "dim_1", "display_name": "社交能耗", "low_label": "闭环", "high_label": "吸睛"}, {"id": "dim_2", "display_name": "规则顺从", "low_label": "反骨", "high_label": "守序"}, {"id": "dim_3", "display_name": "情感浓度", "low_label": "冷峻", "high_label": "煽情"}], "archetypes": [{"id": "arch_1", "name": "灵魂领袖", "description": "拒绝平庸的掌控狂，世界舞台的唯一主角。你不仅要掌控麦克风，还要时刻确认台下每一个人都在为你尖叫。", "reference_name": "John Lennon", "reference_source": "披头士乐队主唱", "image_path": "images/arch_1.png", "vector": {"dim_1": 1.0, "dim_2": -0.9, "dim_3": 0.5}}, {"id": "arch_2", "name": "秩序守护", "description": "典型的完美主义强迫症，规则的制定者也是最大的受益者。你擅长把混乱的生活修剪得整整齐齐，让人挑不出毛病。", "reference_name": "Paul McCartney", "reference_source": "披头士乐队贝斯手", "image_path": "images/arch_2.png", "vector": {"dim_1": 0.6, "dim_2": 0.8, "dim_3": 0.7}}, {"id": "arch_3", "name": "冰山潜水员", "description": "人群中的隐身达人，比起喧哗更享受大脑里的精神宇宙。你冷眼旁观着周围的一切，偶尔蹦出的观点总能瞬间终结话题。", "reference_name": "George Harrison", "reference_source": "披头士乐队吉他手", "image_path": "images/arch_3.png", "vector": {"dim_1": -0.8, "dim_2": 0.2, "dim_3": -0.9}}, {"id": "arch_4", "name": "快乐的边缘人", "description": "把生活过成背景板的社交老油条，没什么大野心但谁也离不开你。擅长用看似没心没肺的幽默感，化解一切试图严肃探讨的危机。", "reference_name": "Ringo Starr", "reference_source": "披头士乐队鼓手", "image_path": "images/arch_4.png", "vector": {"dim_1": 0.2, "dim_2": -0.4, "dim_3": -0.2}}], "rare_tags": [{"id": "rtag_1", "name": "顶级造梦经理人", "description": "比起舞台上的光鲜亮丽，你更享受在幕后操盘一切、看着一群天才在你的规则里发疯的快感。", "reference_name": "布莱恩·爱泼斯坦", "reference_source": "披头士乐队经理人", "image_path": "images/rtag_1.png", "rules": {"all": [{"type": "dimension_max", "dimension": "dim_1", "cluster": null, "value": 0.9}, {"type": "dimension_min", "dimension": "dim_2", "cluster": null, "value": 0.5}, {"type": "special_cluster_min_hits", "dimension": null, "cluster": "manager_type_logic", "value": 2.0}]}, "origin": "user_seeded", "user_seed_character": "布莱恩爱泼斯坦", "user_seed_traits": null}, {"id": "rtag_2", "name": "高维理性调音师", "description": "你就像那个冷静到近乎刻薄的实验员，永远在给混乱的艺术加个框，把失控的灵感修剪成大众买单的商品。", "reference_name": "乔治·马丁", "reference_source": "披头士乐队制作人", "image_path": "images/rtag_2.png", "rules": {"all": [{"type": "dimension_min", "dimension": "dim_2", "cluster": null, "value": 0.7}, {"type": "dimension_max", "dimension": "dim_3", "cluster": null, "value": -0.4}, {"type": "special_cluster_min_hits", "dimension": null, "cluster": "producer_type_logic", "value": 2.0}]}, "origin": "user_seeded", "user_seed_character": "乔治马丁", "user_seed_traits": null}], "questions": [{"id": "dq_1", "stem": "周五晚上的饭局，你是那个疯狂找梗的氛围组，还是默默把菜吃完的边缘人？", "primary_dimension": "dim_1", "secondary_dimensions": [], "options": [{"text": "全场笑点我承包了，没我这局就散了吧", "effects": {"dim_1": 2}}, {"text": "混在人堆里，偶尔接个话，别cue我", "effects": {"dim_1": 0}}, {"text": "只想赶紧吃完回家，戴上耳机与世隔绝", "effects": {"dim_1": -2}}], "is_special": false, "special_cluster": null}, {"id": "dq_2", "stem": "被路人拍到丑照发上网，你会怎么反应？", "primary_dimension": "dim_1", "secondary_dimensions": ["dim_3"], "options": [{"text": "这波流量我蹭定了，顺便转发自嘲一下", "effects": {"dim_1": 2, "dim_3": 1}}, {"text": "有点尴尬，私信请求删掉，虽然大概率没回应", "effects": {"dim_1": 0, "dim_3": 0}}, {"text": "被冒犯到，直接举报或冷处理，谁也别想蹭我", "effects": {"dim_1": -2, "dim_3": -1}}], "is_special": false, "special_cluster": null}, {"id": "dq_3", "stem": "收到一条没头没尾的八卦消息，你的第一反应是？", "primary_dimension": "dim_1", "secondary_dimensions": [], "options": [{"text": "赶紧发到群里，这不得讨论个三天三夜？", "effects": {"dim_1": 2}}, {"text": "哦，知道了，没回复的必要", "effects": {"dim_1": 0}}, {"text": "甚至没点开看，社交信息过载了", "effects": {"dim_1": -2}}], "is_special": false, "special_cluster": null}, {"id": "dq_4", "stem": "你更倾向于在什么样的状态下展现自我？", "primary_dimension": "dim_1", "secondary_dimensions": [], "options": [{"text": "聚光灯下，众人的目光就是我的能量补给", "effects": {"dim_1": 2}}, {"text": "仅限熟人局，偶尔输出一下观点", "effects": {"dim_1": 0}}, {"text": "只有在没人的地方，我才是最真实的", "effects": {"dim_1": -2}}], "is_special": false, "special_cluster": null}, {"id": "dq_5", "stem": "面对公司极其离谱的KPI或流程，你通常的做法是？", "primary_dimension": "dim_2", "secondary_dimensions": [], "options": [{"text": "带头质疑，流程是用来被打破的", "effects": {"dim_2": -2}}, {"text": "吐槽几句，然后该干嘛干嘛，不当出头鸟", "effects": {"dim_2": 0}}, {"text": "严格执行，毕竟规矩就是用来遵守的", "effects": {"dim_2": 2}}], "is_special": false, "special_cluster": null}, {"id": "dq_6", "stem": "当你看到“严禁入内”的标志，但那里面看起来风景不错时？", "primary_dimension": "dim_2", "secondary_dimensions": [], "options": [{"text": "既然没人看，翻过去看看又何妨？", "effects": {"dim_2": -2}}, {"text": "内心纠结一下，最后还是算了", "effects": {"dim_2": 0}}, {"text": "立刻走开，规则就是规则，没必要找麻烦", "effects": {"dim_2": 2}}], "is_special": false, "special_cluster": null}, {"id": "dq_7", "stem": "你如何看待那些不按套路出牌的“刺头”同事？", "primary_dimension": "dim_2", "secondary_dimensions": [], "options": [{"text": "崇拜，这才是活得通透的人", "effects": {"dim_2": -2}}, {"text": "只要不影响我，随便他们怎么闹", "effects": {"dim_2": 0}}, {"text": "反感，这种人只会破坏团队的稳定性", "effects": {"dim_2": 2}}], "is_special": false, "special_cluster": null}, {"id": "dq_8", "stem": "如果生活是一场通关游戏，你更喜欢哪种模式？", "primary_dimension": "dim_2", "secondary_dimensions": [], "options": [{"text": "随机应变，攻略什么的都是束缚", "effects": {"dim_2": -2}}, {"text": "看心情，该守序时守序，该反骨时反骨", "effects": {"dim_2": 0}}, {"text": "按部就班，按照最优路径稳定通关", "effects": {"dim_2": 2}}], "is_special": false, "special_cluster": null}, {"id": "dq_9", "stem": "看到感人至深的电影桥段，你的生理反应是？", "primary_dimension": "dim_3", "secondary_dimensions": [], "options": [{"text": "泪流满面，甚至想发一条长文感怀人生", "effects": {"dim_3": 2}}, {"text": "内心有波动，但面上波澜不惊", "effects": {"dim_3": 0}}, {"text": "内心冷笑：这编剧逻辑不通，太煽情了", "effects": {"dim_3": -2}}], "is_special": false, "special_cluster": null}, {"id": "dq_10", "stem": "朋友向你哭诉生活不易，你会怎么回应？", "primary_dimension": "dim_3", "secondary_dimensions": [], "options": [{"text": "共情到底，和他一起骂这操蛋的世界", "effects": {"dim_3": 2}}, {"text": "静静听着，给出中肯的安慰和建议", "effects": {"dim_3": 0}}, {"text": "直接分析问题所在，告诉他哭没用，解决它", "effects": {"dim_3": -2}}], "is_special": false, "special_cluster": null}, {"id": "dq_11", "stem": "当你的观点被挑战时，你更倾向于？", "primary_dimension": "dim_3", "secondary_dimensions": [], "options": [{"text": "感觉被冒犯了，情绪直接上头", "effects": {"dim_3": 2}}, {"text": "各抒己见，有理有据地辩论", "effects": {"dim_3": 0}}, {"text": "冷漠地看着对方表演，懒得辩解", "effects": {"dim_3": -2}}], "is_special": false, "special_cluster": null}, {"id": "dq_12", "stem": "你更愿意把钱花在什么地方？", "primary_dimension": "dim_3", "secondary_dimensions": [], "options": [{"text": "能带来情绪价值或感官享受的体验", "effects": {"dim_3": 2}}, {"text": "实用的生活必需品和必要的社交支出", "effects": {"dim_3": 0}}, {"text": "纯粹的资产增值或硬通货投资", "effects": {"dim_3": -2}}], "is_special": false, "special_cluster": null}, {"id": "dsq_1", "stem": "面对一个项目，你更看重什么？", "primary_dimension": "dim_2", "secondary_dimensions": ["dim_1"], "options": [{"text": "逻辑闭环，拒绝任何不可控的变数", "effects": {"dim_2": 2, "dim_1": -1}}, {"text": "颠覆性创新，哪怕失败也得惊艳全场", "effects": {"dim_2": -2, "dim_1": 2}}, {"text": "流程顺滑，大家配合默契就行", "effects": {"dim_2": 1, "dim_1": 0}}], "is_special": true, "special_cluster": "producer_type_logic"}, {"id": "dsq_2", "stem": "如果团队要推行一项争议极大的改革，你会怎么做？", "primary_dimension": "dim_2", "secondary_dimensions": ["dim_3"], "options": [{"text": "冷酷推行，任何阻碍效率的情绪都要被剔除", "effects": {"dim_2": 2, "dim_3": -2}}, {"text": "先安抚人心，利用共情化解反抗情绪", "effects": {"dim_2": 0, "dim_3": 2}}, {"text": "带头造反，这改革简直是反人类设计", "effects": {"dim_2": -2, "dim_3": 0}}], "is_special": true, "special_cluster": "manager_type_logic"}]};
+  </script>
+  <script>(function () {
+  "use strict";
+
+  const container = document.getElementById("app");
+  let currentIndex = 0;
+  const answers = {};
+
+  function getData() {
+    return window.__TEST_DATA__;
+  }
+
+  function isAxisMode() {
+    return getData().mode !== "多维度";
+  }
+
+  // ===== MULTI-AXIS SCORING =====
+
+  function computeAxisScores(data, answers) {
+    const raw = {};
+    const maxPossible = {};
+    data.axes.forEach(function (a) {
+      raw[a.id] = 0;
+      maxPossible[a.id] = 0;
+    });
+    data.questions.forEach(function (q) {
+      const ans = answers[q.id];
+      if (ans === undefined) return;
+      raw[q.primary_axis_id] += ans;
+      maxPossible[q.primary_axis_id] += 2;
+      (q.weak_axes || []).forEach(function (w) {
+        if (raw[w.axis_id] !== undefined) {
+          raw[w.axis_id] += ans * w.coefficient;
+          maxPossible[w.axis_id] += 2 * w.coefficient;
+        }
+      });
+    });
+    const normalized = {};
+    for (var id in raw) {
+      var cap = maxPossible[id];
+      normalized[id] = cap > 0 ? Math.max(-1, Math.min(1, raw[id] / cap)) : 0;
+    }
+    return normalized;
+  }
+
+  // ===== MULTI-DIMENSION SCORING =====
+
+  function computeDimScores(data, answers) {
+    var raw = {};
+    var maxAbs = {};
+    data.dimensions.forEach(function (d) {
+      raw[d.id] = 0;
+      maxAbs[d.id] = 0;
+    });
+    data.questions.forEach(function (q) {
+      var optIdx = answers[q.id];
+      if (optIdx === undefined || optIdx < 0 || optIdx >= q.options.length) return;
+      var effects = q.options[optIdx].effects;
+      for (var dimId in effects) {
+        if (raw[dimId] !== undefined) {
+          raw[dimId] += effects[dimId];
+          maxAbs[dimId] += Math.abs(effects[dimId]);
+        }
+      }
+    });
+    var normalized = {};
+    for (var dimId in raw) {
+      var cap = maxAbs[dimId];
+      normalized[dimId] = cap > 0 ? Math.max(-1, Math.min(1, raw[dimId] / cap)) : 0;
+    }
+    return normalized;
+  }
+
+  // ===== SHARED MATH =====
+
+  function cosineSimilarity(vecA, vecB) {
+    var dot = 0, magA = 0, magB = 0;
+    var allKeys = {};
+    for (var k in vecA) allKeys[k] = true;
+    for (var k2 in vecB) allKeys[k2] = true;
+    for (var key in allKeys) {
+      var a = vecA[key] || 0;
+      var b = vecB[key] || 0;
+      dot += a * b;
+      magA += a * a;
+      magB += b * b;
+    }
+    if (magA === 0 || magB === 0) return 0;
+    return dot / (Math.sqrt(magA) * Math.sqrt(magB));
+  }
+
+  function mapNormalResult(scores, normalResults) {
+    var best = null, bestSim = -999;
+    normalResults.forEach(function (r) {
+      var sim = cosineSimilarity(scores, r.dimension_combo);
+      if (sim > bestSim) { bestSim = sim; best = r; }
+    });
+    return best;
+  }
+
+  function matchArchetype(scores, archetypes) {
+    var best = null, bestSim = -999;
+    archetypes.forEach(function (a) {
+      var sim = cosineSimilarity(scores, a.vector);
+      if (sim > bestSim) { bestSim = sim; best = a; }
+    });
+    return { archetype: best, similarity: bestSim };
+  }
+
+  // ===== AXIS RARE RESULTS =====
+
+  function checkAxisRareResults(scores, questions, answers, rareResults) {
+    var triggered = [];
+    (rareResults || []).forEach(function (rr) {
+      var dimsMet = (rr.threshold_conditions || []).every(function (c) {
+        return (scores[c.axis_id] || 0) * c.direction >= c.threshold;
+      });
+      if (!dimsMet) return;
+      var hits = 0;
+      questions.forEach(function (q) {
+        if (q.is_special && q.linked_rare_id === rr.id) {
+          if (Math.abs(answers[q.id] || 0) >= 1) hits++;
+        }
+      });
+      if (hits >= (rr.min_special_hits || 1)) triggered.push(rr);
+    });
+    return triggered;
+  }
+
+  // ===== DIMENSION RARE TAGS =====
+
+  function checkDimRareTags(scores, questions, answers, rareTags) {
+    var clusterHits = {};
+    questions.forEach(function (q) {
+      if (q.is_special && q.special_cluster) {
+        var optIdx = answers[q.id];
+        if (optIdx !== undefined && optIdx >= 0 && optIdx < q.options.length) {
+          var effects = q.options[optIdx].effects;
+          for (var k in effects) {
+            if (Math.abs(effects[k]) >= 1) {
+              clusterHits[q.special_cluster] = (clusterHits[q.special_cluster] || 0) + 1;
+              break;
+            }
+          }
+        }
+      }
+    });
+    var triggered = [];
+    (rareTags || []).forEach(function (rt) {
+      if (evalRules(rt.rules, scores, clusterHits)) triggered.push(rt);
+    });
+    return triggered;
+  }
+
+  function evalRules(rules, scores, clusterHits) {
+    for (var gate in rules) {
+      var ruleList = rules[gate];
+      var results = ruleList.map(function (r) { return evalSingleRule(r, scores, clusterHits); });
+      if (gate === "all" && results.indexOf(false) !== -1) return false;
+      if (gate === "any" && results.indexOf(true) === -1) return false;
+    }
+    return true;
+  }
+
+  function evalSingleRule(rule, scores, clusterHits) {
+    if (rule.type === "dimension_min") return (scores[rule.dimension] || 0) >= rule.value;
+    if (rule.type === "dimension_max") return (scores[rule.dimension] || 0) <= rule.value;
+    if (rule.type === "special_cluster_min_hits") return (clusterHits[rule.cluster] || 0) >= rule.value;
+    return false;
+  }
+
+  // ===== RENDERING =====
+
+  function renderStart() {
+    var data = getData();
+    var qLen = data.questions.length;
+    container.innerHTML =
+      '<div class="start-page">' +
+        '<h1>' + (data.title || "人格测试") + '</h1>' +
+        '<p>' + (data.description || "发现你的隐藏人格类型") + '</p>' +
+        '<p class="question-count">共 ' + qLen + ' 道题</p>' +
+        '<button class="btn btn-primary" onclick="window.__startTest()">开始测试</button>' +
+      '</div>';
+  }
+
+  window.__startTest = function () {
+    currentIndex = 0;
+    for (var k in answers) delete answers[k];
+    renderQuestion();
+  };
+
+  function renderQuestion() {
+    var data = getData();
+    var q = data.questions[currentIndex];
+    var total = data.questions.length;
+    var pct = (currentIndex / total * 100).toFixed(0);
+
+    if (isAxisMode()) {
+      renderAxisQuestion(q, total, pct);
+    } else {
+      renderDimQuestion(q, total, pct);
+    }
+  }
+
+  // axis-mode question (5 options, value-based)
+  function renderAxisQuestion(q, total, pct) {
+    var selected = answers[q.id];
+    var optionsHtml = q.options.map(function (opt, i) {
+      return '<button class="option-btn ' + (selected === opt.value ? "selected" : "") + '"' +
+        ' onclick="window.__selectAxisOption(\'' + q.id + '\',' + opt.value + ')">' + opt.text + '</button>';
+    }).join("");
+
+    container.innerHTML =
+      '<div class="progress-text">' + (currentIndex + 1) + ' / ' + total + '</div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="question-card"><div class="question-text">' + q.text + '</div><div class="options">' + optionsHtml + '</div></div>' +
+      '<div class="nav-buttons">' +
+        (currentIndex > 0 ? '<button class="btn btn-secondary" onclick="window.__prevQ()">上一题</button>' : '<div></div>') +
+        '<button class="btn btn-primary" ' + (selected === undefined ? "disabled" : "") + ' onclick="window.__nextQ()">' +
+        (currentIndex === total - 1 ? "查看结果" : "下一题") + '</button></div>';
+  }
+
+  // dim-mode question (3 options, index-based)
+  function renderDimQuestion(q, total, pct) {
+    var selected = answers[q.id];
+    var optionsHtml = q.options.map(function (opt, i) {
+      return '<button class="option-btn ' + (selected === i ? "selected" : "") + '"' +
+        ' onclick="window.__selectDimOption(\'' + q.id + '\',' + i + ')">' + opt.text + '</button>';
+    }).join("");
+
+    container.innerHTML =
+      '<div class="progress-text">' + (currentIndex + 1) + ' / ' + total + '</div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+      '<div class="question-card"><div class="question-text">' + (q.stem || q.text) + '</div><div class="options">' + optionsHtml + '</div></div>' +
+      '<div class="nav-buttons">' +
+        (currentIndex > 0 ? '<button class="btn btn-secondary" onclick="window.__prevQ()">上一题</button>' : '<div></div>') +
+        '<button class="btn btn-primary" ' + (selected === undefined ? "disabled" : "") + ' onclick="window.__nextQ()">' +
+        (currentIndex === total - 1 ? "查看结果" : "下一题") + '</button></div>';
+  }
+
+  window.__selectAxisOption = function (qId, value) { answers[qId] = value; renderQuestion(); };
+  window.__selectDimOption = function (qId, idx) { answers[qId] = idx; renderQuestion(); };
+  window.__selectOption = function (qId, value) { answers[qId] = value; renderQuestion(); };
+
+  window.__prevQ = function () { if (currentIndex > 0) { currentIndex--; renderQuestion(); } };
+  window.__nextQ = function () {
+    var data = getData();
+    if (currentIndex < data.questions.length - 1) { currentIndex++; renderQuestion(); }
+    else { renderResult(); }
+  };
+
+  // ===== RESULT =====
+
+  function renderResult() {
+    if (isAxisMode()) { renderAxisResult(); }
+    else { renderDimResult(); }
+  }
+
+  function renderAxisResult() {
+    var data = getData();
+    var scores = computeAxisScores(data, answers);
+    var normal = mapNormalResult(scores, data.normal_results);
+    var rares = checkAxisRareResults(scores, data.questions, answers, data.rare_results || []);
+
+    var overrideName = null, overrideDesc = null;
+    var rareTags = [];
+    var mainImg = normal && normal.image_path ? normal.image_path : null;
+    rares.forEach(function (rr) {
+      if (rr.type === "覆盖") {
+        overrideName = rr.name;
+        overrideDesc = rr.description;
+        if (rr.image_path) mainImg = rr.image_path;
+      } else {
+        rareTags.push({ name: rr.name, image_path: rr.image_path || null });
+      }
+    });
+
+    var resolved = resolveDisplayName(data.naming_mode, overrideName || (normal ? normal.name : "未知"), normal);
+    var mainDesc = overrideDesc || (normal ? normal.description : "");
+
+    container.innerHTML = buildResultHTML(resolved.display, resolved.subtitle, mainDesc, mainImg, null, rareTags, data.axes.map(function (a) {
+      return { low: a.left_name, high: a.right_name, score: scores[a.id] || 0 };
+    }));
+  }
+
+  function renderDimResult() {
+    var data = getData();
+    var scores = computeDimScores(data, answers);
+    var match = matchArchetype(scores, data.archetypes);
+    var arch = match.archetype;
+    var similarity = match.similarity;
+    var rares = checkDimRareTags(scores, data.questions, answers, data.rare_tags || []);
+    var simPct = (similarity * 100).toFixed(0);
+
+    var resolved = resolveDisplayName(data.naming_mode, arch ? arch.name : "未知", arch);
+    var mainDesc = arch ? arch.description : "";
+    var imgPath = arch && arch.image_path ? arch.image_path : null;
+
+    container.innerHTML = buildResultHTML(resolved.display, resolved.subtitle, mainDesc, imgPath, simPct, rares.map(function (t) {
+      return { name: t.name, image_path: t.image_path || null };
+    }), data.dimensions.map(function (d) {
+      return { low: d.low_label, high: d.high_label, score: scores[d.id] || 0 };
+    }));
+  }
+
+  function resolveDisplayName(namingMode, abstractName, resultObj) {
+    var refName = resultObj && resultObj.reference_name ? resultObj.reference_name : null;
+    var refSrc = resultObj && resultObj.reference_source ? resultObj.reference_source : null;
+
+    if (namingMode === "角色对标" && refName) {
+      return { display: refName, subtitle: refSrc ? "（" + refSrc + "）" : "" };
+    }
+    if (namingMode === "两者兼用" && refName) {
+      var sub = "类似于 " + refName;
+      if (refSrc) sub += "（" + refSrc + "）";
+      return { display: abstractName, subtitle: sub };
+    }
+    return { display: abstractName, subtitle: "" };
+  }
+
+  // Shared result layout builder (SBTI-style)
+  function buildResultHTML(name, subtitle, desc, imgPath, matchPct, rareTagItems, dims) {
+    var posterHtml = imgPath
+      ? '<div class="poster-box"><img src="' + imgPath + '" alt="' + name + '"></div>'
+      : '';
+
+    var matchHtml = matchPct ? '<div class="match-badge">匹配度 ' + matchPct + '%</div>' : '';
+
+    var rareHtml = rareTagItems && rareTagItems.length
+      ? '<div class="rare-tags">' + rareTagItems.map(function (t) {
+          var img = t.image_path
+            ? '<img src="' + t.image_path + '" alt="" class="rare-tag-img">'
+            : '';
+          return '<span class="rare-tag">' + img + '<span class="rare-tag-text">\u2728 ' + t.name + '</span></span>';
+        }).join("") + '</div>'
+      : '';
+
+    var dimHtml = dims.map(function (d) {
+      var pct = ((d.score + 1) / 2 * 100).toFixed(1);
+      return '<div class="dim-row">' +
+        '<div class="dim-labels"><span>' + d.low + '</span><span>' + d.high + '</span></div>' +
+        '<div class="dim-track"><div class="dim-indicator" style="left:' + pct + '%"></div></div>' +
+        '</div>';
+    }).join("");
+
+    var subtitleHtml = subtitle ? '<div class="type-subtitle">' + subtitle + '</div>' : '';
+
+    return '<div class="result-page">' +
+      '<div class="header"><p>你的测试结果</p></div>' +
+      '<div class="result-top">' +
+        posterHtml +
+        '<div class="type-box">' +
+          '<div class="type-kicker">YOUR TYPE</div>' +
+          '<div class="type-name">' + name + '</div>' +
+          subtitleHtml +
+          matchHtml +
+        '</div>' +
+      '</div>' +
+      rareHtml +
+      '<div class="result-desc-box">' + desc + '</div>' +
+      '<div class="dimension-bars">' + dimHtml + '</div>' +
+      '<div class="result-actions">' +
+        '<button class="btn btn-secondary restart-btn" onclick="window.__restart()">重新测试</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  window.__restart = function () {
+    currentIndex = 0;
+    for (var k in answers) delete answers[k];
+    renderStart();
+  };
+
+  renderStart();
+})();
+</script>
+</body>
+</html>
